@@ -2,6 +2,7 @@ from flask import Flask, jsonify
 from utils import search_film, year_to_year, by_rating, by_genre
 
 app = Flask(__name__)
+app.config['JSONIFY_PRETTYPRINT_REGULAR'] = True
 
 
 @app.route('/')
@@ -17,7 +18,7 @@ def searching(title):
     return jsonify(movie)
 
 
-@app.route('/movie/<year1>/to/<year2>')
+@app.route('/movie/<int:year1>/to/<int:year2>')
 def years(year1, year2):
     movies = year_to_year(year1, year2)
     if not movies:
