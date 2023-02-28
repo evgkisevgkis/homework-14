@@ -85,15 +85,28 @@ def by_genre(genre):
 
 def find_actors(actor1, actor2):
     """Функция получает имена двух актеров и возвращает тех, с кем они играли более двух раз"""
-    query = f"SELECT netflix.cast from netflix WHERE netflix.cast LIKE '%{actor1}%' AND netflix.cast LIKE '%{actor2}%'"
+    query = f"SELECT netflix.cast from netflix WHERE netflix.cast LIKE '%{actor1}%' OR netflix.cast LIKE '%{actor2}%'"
 
     with sqlite3.connect("netflix.db") as connection:
         cursor = connection.cursor()
         cursor.execute(query)
         result = cursor.fetchall()
-    for i in result:
-        if i.count > 2:
-            print(i)
+
+    actors_count = {}
+    for actors in result:
+        list_actors = actors[0].split(", ")
+        for actor in list_actors:
+            if actor != actor1 and actor != actor2:
+                if actor not in actors_count:
+                    actors_count[actor] = 1
+                else:
+                    actors_count[actor] += 1
+
+    total = []
+    for k, v in actors_count.items():
+        if v > 2:
+            total.append(k)
+    return total
 
 
 def advanced_search(ftype, year, genre):
